@@ -1,9 +1,3 @@
-*.sublime-workspace
-*.sublime-project
-test.csv
 *.pyc
-input
-output
-.idea
-venv
-.vscode
+/__pycache__/*
+/output/*

@@ -1,16 +1,13 @@
 #!/usr/bin/python
 
-import os, sys
-
-from dspacearchive import DspaceArchive
+import sys
+from lib import DspaceArchive
 
 if len(sys.argv) != 2:
-	print("Usage: ./main.py /path/to/input/file.csv")
+	print("Usage: ./main file.csv")
 	sys.exit()
 
 input_file = sys.argv[1]
-input_base_path = os.path.dirname(input_file)
 
 archive = DspaceArchive(input_file)
 archive.write("./output")
-

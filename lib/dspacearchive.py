@@ -6,7 +6,7 @@ Simple Archive format.
 """
 
 import os, csv
-from itemfactory import ItemFactory
+from .itemfactory import ItemFactory
 from shutil import copy
 
 class DspaceArchive:
@@ -22,8 +22,8 @@ class DspaceArchive:
         self.input_path = input_path
         self.input_base_path = os.path.dirname(input_path)
 
-        with open(self.input_path, 'r', encoding="utf-8-sig") as f:
-            reader = csv.reader(f)
+        with open(self.input_path, 'r', encoding="utf-8") as f:
+            reader = csv.reader(f, delimiter=';')
 
             header = next(reader)
 
@@ -55,7 +55,7 @@ class DspaceArchive:
         for index, item in enumerate(self.items):
 
             #item directory
-            name = "item_%03d" % (int(index) + 1)
+            name = str(int(index) + 1)
             item_path = os.path.join(dir, name)
             self.create_directory(item_path)
 
@@ -106,6 +106,6 @@ class DspaceArchive:
     def writeMetadata(self, item, item_path):
         xml = item.toXML()
 
-        metadata_file = open(os.path.join(item_path, 'dublin_core.xml'), "w")
+        metadata_file = open(os.path.join(item_path, 'dublin_core.xml'), "w", encoding="utf-8")
         metadata_file.write(xml)
         metadata_file.close()

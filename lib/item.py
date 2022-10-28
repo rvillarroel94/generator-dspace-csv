@@ -6,8 +6,6 @@ An item has a collection of files (aka Bitstreams) and a number of metadata name
 
 import os
 import re
-import html
-
 
 class Item:
     delimiter = '||'
@@ -72,11 +70,12 @@ class Item:
     Returns an XML represenatation of the item.
     """
     def toXML(self):
-        output = ""
-        output += "<dublin_core>" + os.linesep
+        linesep = '\n'
+        output = '<?xml version="1.0" encoding="utf-8" standalone="no"?>' + linesep
+        output += '<dublin_core schema="dc">' + linesep
         for index, value in self.getAttributes().items():
             tag_open = self.getOpenAttributeTag(index)
-            tag_close = "</dcvalue>" + os.linesep
+            tag_close = "</dcvalue>" + linesep
 
             values = value.split(self.delimiter)
 
@@ -84,10 +83,10 @@ class Item:
                 if not val:
                     continue
 
-                output += tag_open
-                output += html.escape(val.strip(), quote=True)
+                output += '  '+tag_open
+                output += self.escape(val.strip(), quote=True)
                 output += tag_close
-        output += "</dublin_core>" + os.linesep
+        output += "</dublin_core>" + linesep
 
         return output
 
@@ -111,7 +110,7 @@ class Item:
         match = re.search('_(\w+)', attribute)
 
         if match != None:
-            return ' language="' + html.escape(match.group(1), quote=True) + '" '
+            return 'language="' + self.escape(match.group(1), quote=True) + '"'
         else:
             return ''
 
@@ -131,7 +130,7 @@ class Item:
         attribs = attribute.split('.')
 
         if len(attribs) >= 2:
-            return ' element="' + html.escape(attribs[1], quote=True) + '" '
+            return ' element="' + self.escape(attribs[1], quote=True) + '" '
         else:
             return ''
 
@@ -144,6 +143,22 @@ class Item:
         attribs = attribute.split('.')
 
         if len(attribs) >= 3:
-            return ' qualifier="' + html.escape(attribs[2], quote=True) + '" '
+            return 'qualifier="' + self.escape(attribs[2], quote=True) + '"'
         else:
-            return ''
+            return 'qualifier="none"'
+    
+    def escape(self, s, quote=True):
+        """
+        Replace special characters "&", "<" and ">" to HTML-safe sequences.
+        If the optional flag quote is true (the default), the quotation mark
+        characters, both double quote (") and single quote (') characters are also
+        translated.
+        """
+        s = s.replace("&", "&amp;") # Must be done first!
+        s = s.replace("<", "&lt;")
+        s = s.replace(">", "&gt;")
+        s = s.replace(" ", "&#x20;")
+        if quote:
+            s = s.replace('"', "&quot;")
+            s = s.replace('\'', "&#x27;")
+        return s
