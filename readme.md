@@ -5,7 +5,7 @@ Takes a simple CSV spreadsheet (with sep ";") and UTF-8 Enconding, and a bunch o
 Some simple rules: 
 -------------------
 * The first row should be your header, which defines the values you're going to provide. 
-* First column is mandatory: 'files'. Files can be organized in any way you want, just provide the proper path relative to the CSV file's location.
+* The columns 'files' and 'lote_load' was mandatory. Files can be organized in any way you want, just provide the proper path relative to the CSV file's location.
 * Add one column for each metadata element (eg: dc.title)
 * The order of the columns does not matter.
 * Only dublin core metadata elements are supported.
@@ -17,6 +17,7 @@ An Example:
 -----------
 <table>
 	<tr>
+		<th>lote_load</th>
 		<th>files</th>
 		<th>dc.title en</th>
 		<th>dc.contributor.author</th>
@@ -24,6 +25,7 @@ An Example:
 		<th>dc.type</th>
 	</tr>
 	<tr>
+		<td>group_1</td>
 		<td>black.pdf||something2.txt</td>
 		<td>Title 1</td>
 		<td>LASTNAME, FIRSTNAME</td>
@@ -31,6 +33,7 @@ An Example:
 		<td>Report</td>
 	</tr>
 	<tr>
+		<td>group_2</td>
 		<td>directory/something2.pdf</td>
 		<td>Title 2</td>
 		<td>LASTNAME1, FIRSTNAME1||LASTNAME2, FIRSTNAME2</td>
@@ -41,7 +44,7 @@ An Example:
 
 Usage
 -----
-	python main.py file_to_load.csv
+	python main.py .\to_load\file.csv
 
 Importing into DSpace
 ---------------------

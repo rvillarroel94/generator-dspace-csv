@@ -5,7 +5,8 @@ See: http://www.dspace.org/1_6_2Documentation/ch08.html#N15B5D for more informat
 Simple Archive format. 
 """
 
-import os, csv
+import os
+import pandas as pd
 from .itemfactory import ItemFactory
 from shutil import copy
 
@@ -19,19 +20,18 @@ class DspaceArchive:
     """
     def __init__(self, input_path):
         self.items = []
+        
         self.input_path = input_path
         self.input_base_path = os.path.dirname(input_path)
 
-        with open(self.input_path, 'r', encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=';')
+        df_csv = pd.read_csv(self.input_path, sep=';', encoding="utf-8", dtype=str)
+        self.groups = df_csv['lote_load'].to_list()
+        df_csv.drop('lote_load', axis=1, inplace=True)
 
-            header = next(reader)
-
-            item_factory = ItemFactory(header)
-
-            for row in reader:
-                item = item_factory.newItem(row)
-                self.addItem(item)
+        item_factory = ItemFactory(df_csv.columns.tolist())
+        for index in range(len(df_csv)):
+            item = item_factory.newItem(df_csv.iloc[index].to_list())
+            self.addItem(item)
 
     """
     Add an item to the archive. 
@@ -44,16 +44,21 @@ class DspaceArchive:
     """
     def getItem(self, index):
         return self.items[index]
+    
+    """
+    Get groups from the archive.
+    """
+    def getGroups(self):
+        return self.groups
 
     """
     Write the archie to disk in the format specified by the DSpace Simple Archive format.
     See: http://www.dspace.org/1_6_2Documentation/ch08.html#N15B5D
     """
-    def write(self, dir = "."):
+    def write(self, items, dir = "."):
+
         self.create_directory(dir)
-
-        for index, item in enumerate(self.items):
-
+        for index, item in enumerate(items):
             #item directory
             name = str(int(index) + 1)
             item_path = os.path.join(dir, name)
@@ -79,7 +84,7 @@ class DspaceArchive:
     """
     def create_directory(self, path):
         if not os.path.isdir(path):
-            os.mkdir(path)
+            os.makedirs(path)
 
     """
     Create a contents file that contains a lits of bitstreams, one per line. 
